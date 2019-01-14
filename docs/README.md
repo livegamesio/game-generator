@@ -94,7 +94,7 @@
 ### Game Environment
 ```js
   {
-    env: '' //test/prod
+    env: '' //example: test
   }
 ```
 ### Additional Parameters
