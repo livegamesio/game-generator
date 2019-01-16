@@ -10,7 +10,7 @@
     l['LGFrameObject']=t;l[t]=l[t]||function(){(l[t].q=l[t].q||[]).push(arguments)},
     l[t].l=1*new Date();c=i.createElement(v),h=i.getElementsByTagName(v)[0];
     c.async=1;c.src=e;h.parentNode.insertBefore(c,h)
-  })(window,document,'script',('//embed.lgio.net/lg-f.js?v='+(Date.now())),'lgf');
+  })(window,document,'script',('//static.lgio.net/lg-f.js?v='+(Date.now())),'lgf');
     lgf('config', {
       width: '100%',
       height: '800', //optimum game frame height
