@@ -12,14 +12,7 @@
         '1': 'tombala',
         '2': 'tombalaslot',
         '3': 'overunder',
-        '4': 'kilic',
-        '5': 'tavla',
-        '6': 'basti',
-        '7': 'yanik',
-        '8': 'varvar',
-        '9': 'okey',
-        '10': '101',
-        '11': '51'
+        '4': 'kilic'
       }
     },
     config: {
