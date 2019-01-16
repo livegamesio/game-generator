@@ -23,7 +23,6 @@
         cashierUrl: '', //
         room: '' //
       },
-      generateURL: {}, //
       tpl: '', //
       env: ''
     });
