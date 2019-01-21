@@ -57,7 +57,7 @@
       let game = `game=${LGFrame.config.game}&`
       if (typeof LGFrame.config.game === 'number') {
         game = `game=${LGFrame.constants.games[LGFrame.config.game]}&`
-      } else if (typeof LGFrame.config.game === 'object') {
+      } else if (LGFrame.config.game !== null && typeof LGFrame.config.game === 'object') {
         game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&type=${LGFrame.config.game.type}&`
       }
       return `/?${game}${params}${origin}`
