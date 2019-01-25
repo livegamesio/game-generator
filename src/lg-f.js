@@ -54,11 +54,14 @@
         return window.encodeURIComponent(key) + '=' + window.encodeURIComponent(obj[key])
       }).join('&')
       let origin = `&origin=${LGFrame.config.origin}`
-      let game = `game=${LGFrame.config.game}&`
-      if (typeof LGFrame.config.game === 'number') {
-        game = `game=${LGFrame.constants.games[LGFrame.config.game]}&`
-      } else if (LGFrame.config.game !== null && typeof LGFrame.config.game === 'object') {
-        game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&type=${LGFrame.config.game.type}&`
+      let game = ``
+      if (LGFrame.config.game !== null) {
+        game = `${LGFrame.config.game}&`
+        if (typeof LGFrame.config.game === 'number') {
+          game = `game=${LGFrame.constants.games[LGFrame.config.game]}&`
+        } else if (typeof LGFrame.config.game === 'object') {
+          game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&type=${LGFrame.config.game.type}&`
+        }
       }
       return `/?${game}${params}${origin}`
     },
@@ -75,8 +78,8 @@
       }
 
       LGFrame.container.style.display = 'inline-block'
-      LGFrame.container.style.width = `${LGFrame.config.width}px`
-      LGFrame.container.style.height = `${window.innerHeight}px`
+      LGFrame.container.style.width = `100%`
+      LGFrame.container.style.height = `${window.innerHeight > 800 ? window.innerHeight : 800}px`
 
       LGFrame.frame = document.createElement('iframe')
       LGFrame.frame.name = LGFrame.config.container
@@ -91,6 +94,30 @@
       LGFrame.frame.src = LGFrame.createFrameSource()
 
       LGFrame.container.appendChild(LGFrame.frame)
+    },
+    prefixIgniter: (obj, method) => {
+      let pfx = ['webkit', 'moz', 'ms', 'o', ''],
+          p = 0, m, t
+      while (p < pfx.length && !obj[m]) {
+        m = method
+        if (pfx[p] === '') {
+          m = m.substr(0, 1).toLowerCase() + m.substr(1)
+        }
+        m = pfx[p] + m
+        t = typeof obj[m]
+        if (t !== 'undefined') {
+          pfx = [pfx[p]]
+          return (t === 'function' ? obj[m]() : obj[m])
+        }
+        p++
+      }
+    },
+    toggleFullScreen: () => {
+      if (LGFrame.prefixIgniter(document, "FullScreen") || LGFrame.prefixIgniter(document, "IsFullScreen")) {
+        LGFrame.prefixIgniter(document, "CancelFullScreen")
+      } else {
+        LGFrame.prefixIgniter(document.body, "RequestFullScreen")
+      }
     },
     parseMessage: (message) => {
       if (message) {
@@ -124,6 +151,8 @@
             for (let x = 0; x < types.length; x++) {
               if (types[x] === 'openGame') {
                 LGFrame.openGame(list[types[x]])
+              } else if (list[types[x]] === 'toggleFullscreen') {
+                LGFrame.toggleFullScreen()
               }
             }
           }
@@ -143,7 +172,7 @@
       }
     },
     resize: () => {
-      LGFrame.container.style.height = `${window.innerHeight}px`
+      LGFrame.container.style.height = `${window.innerHeight > 800 ? window.innerHeight : 800}px`
     },
     init: () => {
       window.addEventListener('resize', LGFrame.resize, false)
@@ -160,6 +189,7 @@
             LGFrame.appendIframe()
           } else {
             console.log('LGFrame config is not defined.')
+            return
           }
         }
       } else {
