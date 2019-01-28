@@ -12,19 +12,14 @@
     c.async=1;c.src=e;h.parentNode.insertBefore(c,h)
   })(window,document,'script',('//static.lgio.net/lg-f.js?v='+(Date.now())),'lgf');
     lgf('config', {
-      width: '100%',
-      height: '800', //optimum game frame height
-      container: 'lgf-container', //id of html frame container element
+      container: 'lgf-container', //id of html frame container element #:required
       origin: '', //frame top parent site origin url (default: document.referrer) (required for fullscreen)
-      game: 3, //game id/name
       params: { // for all additional parameters
-        sign:  'funmode', //
+        sign:  'funmode', // #:required
         homepage: '', //
         cashierUrl: '', //
         room: '' //
-      },
-      tpl: '', //
-      env: ''
+      }
     });
 </script>
 ```
