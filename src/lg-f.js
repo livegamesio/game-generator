@@ -13,6 +13,20 @@
         '2': 'tombalaslot',
         '3': 'overunder',
         '4': 'kilic'
+      },
+      gameConfig: {
+        tombala: {
+          type: true
+        },
+        overunder: {
+          type: false
+        },
+        tombalaslot: {
+          type: false
+        },
+        kilic: {
+          type: false
+        }
       }
     },
     config: {
@@ -60,10 +74,16 @@
         if (typeof LGFrame.config.game === 'number') {
           game = `game=${LGFrame.constants.games[LGFrame.config.game]}&`
         } else if (typeof LGFrame.config.game === 'object') {
-          game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&type=${LGFrame.config.game.type}&`
+          game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&`
+          if (typeof LGFrame.config.game.auto !== 'undefined' && String(LGFrame.config.game.auto) === 'true') {
+            game += `auto=${LGFrame.config.game.auto}&`
+          }
+          if (LGFrame.constants.gameConfig[LGFrame.constants.games[LGFrame.config.game.id]].type) {
+            game += `type=${LGFrame.config.game.type}&`
+          }
         }
       }
-      return `/?${game}${params}${origin}`
+      return `/${LGFrame.config.generateURL ? 'init' : ''}?${game}${params}${origin}`
     },
     createFrameSource: () => {
       const protocolMatch = /^(https?)/
@@ -96,8 +116,7 @@
       LGFrame.container.appendChild(LGFrame.frame)
     },
     prefixIgniter: (obj, method) => {
-      let pfx = ['webkit', 'moz', 'ms', 'o', ''],
-          p = 0, m, t
+      let pfx = ['webkit', 'moz', 'ms', 'o', ''], p = 0, m, t
       while (p < pfx.length && !obj[m]) {
         m = method
         if (pfx[p] === '') {
@@ -113,10 +132,10 @@
       }
     },
     toggleFullScreen: () => {
-      if (LGFrame.prefixIgniter(document, "FullScreen") || LGFrame.prefixIgniter(document, "IsFullScreen")) {
-        LGFrame.prefixIgniter(document, "CancelFullScreen")
+      if (LGFrame.prefixIgniter(document, 'FullScreen') || LGFrame.prefixIgniter(document, 'IsFullScreen')) {
+        LGFrame.prefixIgniter(document, 'CancelFullScreen')
       } else {
-        LGFrame.prefixIgniter(document.body, "RequestFullScreen")
+        LGFrame.prefixIgniter(document.body, 'RequestFullScreen')
       }
     },
     parseMessage: (message) => {
@@ -151,6 +170,8 @@
             for (let x = 0; x < types.length; x++) {
               if (types[x] === 'openGame') {
                 LGFrame.openGame(list[types[x]])
+              } else if (list[types[x]] === 'redirectLobby' && LGFrame.config.params.lobbyUrl) {
+                LGFrame.redirect(LGFrame.config.params.lobbyUrl)
               } else if (list[types[x]] === 'toggleFullscreen') {
                 LGFrame.toggleFullScreen()
               }
@@ -166,10 +187,13 @@
     openGame: (type) => {
       LGFrame.setCookie('LGFrameGame', type)
       if (typeof LGFrame.config.redirectUrl !== 'undefined') {
-        window.location.href = LGFrame.config.redirectUrl
+        LGFrame.redirect(LGFrame.config.redirectUrl)
       } else {
         console.log('LGFrame redirect url is not defined.')
       }
+    },
+    redirect: (url) => {
+      window.location.href = url
     },
     resize: () => {
       LGFrame.container.style.height = `${window.innerHeight > 800 ? window.innerHeight : 800}px`
