@@ -78,6 +78,26 @@
       type: 'card' //game type/sub page name
     }
   }//will open directly tombala card game
+  
+  Live Tombala Sub Games
+  game: { id: 1, type: 'card' } => Canlı Tombala => Live Tombala
+  game: { id: 1, type: 'color' } => Tombala - Renk => Tombala Bet on Color
+  game: { id: 1, type: 'reward' } => Tombala - Ödül => Tombala Bet on Reward
+
+  RNG Tombala Sub Games
+  game: { id: 1, type: 'card', auto: true  } => Auto Tombala => Auto Tombala
+  game: { id: 1, type: 'color', auto: true } => Tombala - Renk => Tombala Bet on Color
+  game: { id: 1, type: 'reward', auto: true } => Tombala - Ödül => Tombala Bet on Reward
+
+
+  Tombala Slot:
+  { game: 2 }
+
+  OverUnder:
+  { game: 3 }
+
+  Kilic:
+  { game: 4 }
 ```
 ### Game Template
 ```js
