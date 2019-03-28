@@ -59,18 +59,18 @@
 **T:String**
 ```js
   {
-    game: 'tombala' //will open tombala game
+    game: 'overunder'
   }
 ```
 
 **T:Number**
 ```js
   {
-    game: 1 //will open tombala game
+    game: 3
   }
 ```
 
-**T:Object**
+**T:Object (Tombala has sub games under it, id and type param required!)**
 ```js
   {
     game: {
