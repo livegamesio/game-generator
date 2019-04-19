@@ -72,7 +72,7 @@
 **T:Integer**
 ```js
   {
-    game: 3
+    game: 3 //will open directly overunder game
   }
 ```
 
