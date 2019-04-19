@@ -73,14 +73,7 @@
   }
 ```
 
-**T:String**
-```js
-  {
-    game: 'overunder'
-  }
-```
-
-**T:Number**
+**T:Integer**
 ```js
   {
     game: 3
