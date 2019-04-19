@@ -122,7 +122,7 @@
     }
   }
 ```
-### Generate Custom Url
+### Generate Custom Url ( Just for specific integrations )
 ```js
   {
     generateURL: {
