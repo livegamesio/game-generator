@@ -95,7 +95,6 @@
   game: { id: 1, type: 'color', auto: true } => Tombala - Renk => Tombala Bet on Color
   game: { id: 1, type: 'reward', auto: true } => Tombala - Ödül => Tombala Bet on Reward
 
-
   Tombala Slot:
   { game: 2 }
 
