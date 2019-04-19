@@ -56,6 +56,23 @@
   }
 ```
 ### Game Options
+**Game ID List**
+```js
+  {
+    tombala: 1,
+    types: ['card','reward','color']
+  }
+  {
+    tombalaslot: 2
+  }
+  {
+    overunder: 3
+  }
+  {
+    kilic: 4
+  }
+```
+
 **T:String**
 ```js
   {
