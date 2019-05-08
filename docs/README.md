@@ -24,8 +24,6 @@
 </script>
 ```
 
-**Note:** *If there is no element with id **lgf-container** in the html dom, generator script will append new container element to the html body element.*
-
 ## Config Parameters
 
 - [Dimension Properties](#dimension-properties)
