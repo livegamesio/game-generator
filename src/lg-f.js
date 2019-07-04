@@ -34,12 +34,13 @@
       height: 800,
       container: 'lgf-container',
       game: null,
-      origin: document.referrer,
+      origin: null,
       params: null,
       generateURL: null
     },
     frame: null,
     container: null,
+    device: (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1),
     setCookie: (name, value, days) => {
       const date = new Date()
       let expires = ''
@@ -64,15 +65,18 @@
     paramsToQueryString: () => {
       const obj = LGFrame.config.generateURL || LGFrame.config.params
       if (!Object.keys(obj).length) return ''
-      const params = Object.keys(obj).map((key) => {
-        return window.encodeURIComponent(key) + '=' + window.encodeURIComponent(obj[key])
-      }).join('&')
-      let origin = `&origin=${LGFrame.config.origin}`
+      const params = []
+      Object.keys(obj).forEach((key) => {
+        if( !!obj[key] ){
+          params.push(`${window.encodeURIComponent(key)}=${window.encodeURIComponent(obj[key])}`)
+        }
+      })
+      let origin = `&origin=${LGFrame.config.origin ? LGFrame.config.origin : window.location.origin }`
       let game = ``
       if (LGFrame.config.game !== null) {
         game = `${LGFrame.config.game}&`
         if (typeof LGFrame.config.game === 'number') {
-          game = `game=${LGFrame.constants.games[LGFrame.config.game]}&`
+          game = `game=${LGFrame.constants.games[LGFrame.config.game]}&${ LGFrame.constants.games[LGFrame.config.game] === 'tombala' ? 'type=card&' : '' }`
         } else if (typeof LGFrame.config.game === 'object') {
           game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&`
           if (typeof LGFrame.config.game.auto !== 'undefined' && String(LGFrame.config.game.auto) === 'true') {
@@ -83,7 +87,12 @@
           }
         }
       }
-      return `/${LGFrame.config.generateURL ? 'init' : ''}?${game}${params}${origin}`
+      return `/${LGFrame.config.generateURL ? 'init' : ''}?${game}${params.join('&')}${origin}`
+    },
+    transportToLobby: () => {
+      if( !LGFrame.config.game ) return null
+      LGFrame.config.game = null
+      return LGFrame.createFrameSource()
     },
     createFrameSource: () => {
       const protocolMatch = /^(https?)/
@@ -91,15 +100,39 @@
       return `${!protocolMatch.test(LGFrame.constants.baseUrl) ? `${protocol}` : ''}${LGFrame.constants.baseUrl}${LGFrame.paramsToQueryString()}`
     },
     appendIframe: () => {
+      const source = LGFrame.createFrameSource()
+
+      if( LGFrame.config.generateURL && LGFrame.config.generateURL.platformType && LGFrame.config.generateURL.platformType.toLowerCase() === 'mobile' ){
+        window.location.href = source
+        return
+      }
+
+      if( LGFrame.device && LGFrame.config.params && LGFrame.config.params.platformType && LGFrame.config.params.platformType.toLowerCase() === 'mobile' ){
+        window.location.href = source
+        return
+      }
+
       LGFrame.container = document.getElementById(LGFrame.config.container)
       if (LGFrame.container === null) {
         console.log('LGWIframe container could not found.')
         return
       }
 
+      const iframe = document.getElementById(LGFrame.config.container.concat('-iframe'))
+      if (iframe !== null) {
+        iframe.src = LGFrame.createFrameSource()
+        //console.log('LGWIframe already created.')
+        return
+      }
+
+      let height = LGFrame.config.height
+      if( !isNaN(height) ){
+        height = `${window.innerHeight > height ? window.innerHeight : height}px`
+      }
+
       LGFrame.container.style.display = 'inline-block'
       LGFrame.container.style.width = `100%`
-      LGFrame.container.style.height = `${window.innerHeight > 800 ? window.innerHeight : 800}px`
+      LGFrame.container.style.height = height
 
       LGFrame.frame = document.createElement('iframe')
       LGFrame.frame.name = LGFrame.config.container
@@ -133,9 +166,9 @@
     },
     toggleFullScreen: () => {
       if (LGFrame.prefixIgniter(document, 'FullScreen') || LGFrame.prefixIgniter(document, 'IsFullScreen')) {
-        LGFrame.prefixIgniter(document, 'CancelFullScreen')
+        document.exitFullscreen()
       } else {
-        LGFrame.prefixIgniter(document.body, 'RequestFullScreen')
+        LGFrame.prefixIgniter(LGFrame.frame, 'RequestFullScreen')
       }
     },
     parseMessage: (message) => {
@@ -174,6 +207,9 @@
                 LGFrame.redirect(LGFrame.config.params.lobbyUrl)
               } else if (list[types[x]] === 'toggleFullscreen') {
                 LGFrame.toggleFullScreen()
+              } else if(list[types[x]] === 'refreshLobby'){
+                const url = LGFrame.transportToLobby()
+                url && LGFrame.redirect(url)
               }
             }
           }
@@ -196,7 +232,12 @@
       window.location.href = url
     },
     resize: () => {
-      LGFrame.container.style.height = `${window.innerHeight > 800 ? window.innerHeight : 800}px`
+      let height = LGFrame.config.height
+      if( isNaN(height) ){
+        return
+      }
+      height = window.innerHeight > height ? window.innerHeight : height
+      LGFrame.container.style.height = height
     },
     init: () => {
       window.addEventListener('resize', LGFrame.resize, false)
@@ -206,6 +247,13 @@
       }
       LGFrame.constants.baseUrl = `${LGFrame.constants.baseUrl}`
       const options = base[base.LGFrameObject]
+      if( typeof options.update === 'undefined' ){
+        options.update = (params) => {
+          options.q[0] = [] 
+          options.q[0].push('config',params)
+          LGFrame.init()
+        }
+      }
       if (options.q && options.q.length) {
         for (let x = 0; x < options.q.length; x++) {
           if (options.q[x].length > 1 && options.q[x][0] === 'config' && options.q[x][1] instanceof Object) {
