@@ -15,7 +15,7 @@
       container: 'lgf-container', //id of html frame container element #:required
       origin: '', //frame top parent site origin url (default: document.referrer) (required for fullscreen)
       params: { // for all additional parameters
-        sign:  'funmode', // #:required
+        sign:  'aaa.bbb.ccc', // #:required
         homepage: '', //
         cashierUrl: '', //
         room: '' //
