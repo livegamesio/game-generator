@@ -9,10 +9,10 @@
     constants: {
       baseUrl: '//lobby.lgio.net',
       games: {
-        '1': 'tombala',
-        '2': 'tombalaslot',
-        '3': 'overunder',
-        '4': 'kilic'
+        1: 'tombala',
+        2: 'tombalaslot',
+        3: 'overunder',
+        4: 'kilic'
       },
       gameConfig: {
         tombala: {
@@ -31,16 +31,21 @@
     },
     config: {
       width: '100%',
-      height: 800,
+      height: 1000,
       container: 'lgf-container',
-      game: null,
+      game: 0,
       origin: null,
       params: null,
       generateURL: null
     },
     frame: null,
     container: null,
-    device: (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1),
+    device: (typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1),
+    getGameName: (game) => {
+      if (typeof game === 'string' && isNaN(game)) return game
+      const id = typeof game === 'number' ? game : typeof game === 'object' && game.id ? game.id : ''
+      return LGFrame.constants.games[id] || ''
+    },
     setCookie: (name, value, days) => {
       const date = new Date()
       let expires = ''
@@ -67,16 +72,17 @@
       if (!Object.keys(obj).length) return ''
       const params = []
       Object.keys(obj).forEach((key) => {
-        if( !!obj[key] ){
+        if (obj[key]) {
           params.push(`${window.encodeURIComponent(key)}=${window.encodeURIComponent(obj[key])}`)
         }
       })
-      let origin = `&origin=${LGFrame.config.origin ? LGFrame.config.origin : window.location.origin }`
+      const origin = `&origin=${LGFrame.config.origin ? LGFrame.config.origin : window.location.origin}`
       let game = ``
-      if (LGFrame.config.game !== null) {
-        game = `${LGFrame.config.game}&`
-        if (typeof LGFrame.config.game === 'number') {
-          game = `game=${LGFrame.constants.games[LGFrame.config.game]}&${ LGFrame.constants.games[LGFrame.config.game] === 'tombala' ? 'type=card&' : '' }`
+      if (LGFrame.config.game !== 0) {
+        if (typeof LGFrame.config.game === 'string') {
+          game = `game=${LGFrame.config.game}&`
+        } else if (typeof LGFrame.config.game === 'number') {
+          game = `game=${LGFrame.constants.games[LGFrame.config.game]}&${LGFrame.constants.games[LGFrame.config.game] === 'tombala' ? 'type=card&' : ''}`
         } else if (typeof LGFrame.config.game === 'object') {
           game = `game=${LGFrame.constants.games[LGFrame.config.game.id]}&`
           if (typeof LGFrame.config.game.auto !== 'undefined' && String(LGFrame.config.game.auto) === 'true') {
@@ -87,28 +93,35 @@
           }
         }
       }
+
       return `/${LGFrame.config.generateURL ? 'init' : ''}?${game}${params.join('&')}${origin}`
     },
     transportToLobby: () => {
-      if( !LGFrame.config.game ) return null
-      LGFrame.config.game = null
+      if (!LGFrame.config.game) return null
+      LGFrame.config.game = 0
       return LGFrame.createFrameSource()
     },
     createFrameSource: () => {
       const protocolMatch = /^(https?)/
       const protocol = base.location.protocol
-      return `${!protocolMatch.test(LGFrame.constants.baseUrl) ? `${protocol}` : ''}${LGFrame.constants.baseUrl}${LGFrame.paramsToQueryString()}`
+      let only = LGFrame.config.only ? `/${LGFrame.config.only}` : ''
+      if (LGFrame.device && LGFrame.config.game) {
+        only = `/${LGFrame.getGameName(LGFrame.config.game)}`
+      }
+      return `${!protocolMatch.test(LGFrame.constants.baseUrl) ? `${protocol}` : ''}${LGFrame.constants.baseUrl}${only}${LGFrame.paramsToQueryString()}`
     },
     appendIframe: () => {
       const source = LGFrame.createFrameSource()
 
-      if( LGFrame.config.generateURL && LGFrame.config.generateURL.platformType && LGFrame.config.generateURL.platformType.toLowerCase() === 'mobile' ){
+      if (LGFrame.config.generateURL && LGFrame.config.generateURL.platformType && LGFrame.config.generateURL.platformType.toLowerCase() === 'mobile') {
         window.location.href = source
         return
       }
 
-      if( LGFrame.device && LGFrame.config.params && LGFrame.config.params.platformType && LGFrame.config.params.platformType.toLowerCase() === 'mobile' ){
-        window.location.href = source
+      if (LGFrame.device && LGFrame.config.params && LGFrame.config.params.platformType && LGFrame.config.params.platformType.toLowerCase() === 'mobile') {
+        const parts = source.split(LGFrame.constants.baseUrl)
+        parts[1] = `${LGFrame.constants.games[LGFrame.config.game.id]}${parts[1]}`
+        window.location.href = `${parts[0]}${LGFrame.constants.baseUrl}/${parts[1]}`
         return
       }
 
@@ -120,14 +133,18 @@
 
       const iframe = document.getElementById(LGFrame.config.container.concat('-iframe'))
       if (iframe !== null) {
-        iframe.src = LGFrame.createFrameSource()
-        //console.log('LGWIframe already created.')
+        iframe.src = source
+        // console.log('LGWIframe already created.')
         return
       }
 
-      let height = LGFrame.config.height
-      if( !isNaN(height) ){
-        height = `${window.innerHeight > height ? window.innerHeight : height}px`
+      let height = `${window.innerHeight}px`
+      if (LGFrame.config.height && !LGFrame.device) {
+        if (!isNaN(LGFrame.config.height)) {
+          height = `${LGFrame.config.height}px`
+        } else {
+          height = LGFrame.config.height
+        }
       }
 
       LGFrame.container.style.display = 'inline-block'
@@ -149,7 +166,7 @@
       LGFrame.container.appendChild(LGFrame.frame)
     },
     prefixIgniter: (obj, method) => {
-      let pfx = ['webkit', 'moz', 'ms', 'o', ''], p = 0, m, t
+      let pfx = ['webkit', 'moz', 'ms', 'o', '']; let p = 0; let m; let t
       while (p < pfx.length && !obj[m]) {
         m = method
         if (pfx[p] === '') {
@@ -174,7 +191,7 @@
     parseMessage: (message) => {
       if (message) {
         const data = message.split('&')
-        let params = {}
+        const params = {}
         for (let x = 0; x < data.length; x++) {
           const pair = data[x].split('=')
           params[pair[0]] = decodeURIComponent(pair[1])
@@ -207,7 +224,7 @@
                 LGFrame.redirect(LGFrame.config.params.lobbyUrl)
               } else if (list[types[x]] === 'toggleFullscreen') {
                 LGFrame.toggleFullScreen()
-              } else if(list[types[x]] === 'refreshLobby'){
+              } else if (list[types[x]] === 'refreshLobby') {
                 const url = LGFrame.transportToLobby()
                 url && LGFrame.redirect(url)
               }
@@ -233,7 +250,7 @@
     },
     resize: () => {
       let height = LGFrame.config.height
-      if( isNaN(height) ){
+      if (isNaN(height)) {
         return
       }
       height = window.innerHeight > height ? window.innerHeight : height
@@ -247,10 +264,10 @@
       }
       LGFrame.constants.baseUrl = `${LGFrame.constants.baseUrl}`
       const options = base[base.LGFrameObject]
-      if( typeof options.update === 'undefined' ){
+      if (typeof options.update === 'undefined') {
         options.update = (params) => {
-          options.q[0] = [] 
-          options.q[0].push('config',params)
+          options.q[0] = []
+          options.q[0].push('config', params)
           LGFrame.init()
         }
       }
