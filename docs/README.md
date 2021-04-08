@@ -38,7 +38,7 @@
 ```js
   {
     width: '100%', //expected game frame width
-    height: '800', //optimum game frame height
+    height: '1000', //optimum game frame height
   }
 ```
 ### Container Html Element ID
