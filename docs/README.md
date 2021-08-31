@@ -121,7 +121,8 @@
         sign: '', //required: player sign jwt
         homepage: '', //homepage redirect url for unexpected troubles
         cashierUrl: '', //cash add page redirect url for insufficient balance,
-        room: '' //custom room id for campaigns or special situations
+        room: '' //custom room id for campaigns or special situations,
+        lobbyUrl: '' //returning to lobby/main page
     }
   }
 ```
