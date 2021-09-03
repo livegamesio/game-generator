@@ -101,6 +101,15 @@
 
   Kilic:
   { game: 4 }
+  
+  Roulette:
+  { game: 5 }
+  
+  Roulette Rooms
+  game: { id: 5, type: 'live' } => Live Roulette
+  game: { id: 5, type: 'auto-slow' } => Auto Slow Roulette
+  game: { id: 5, type: 'auto-normal' } => Auto Roulette
+  game: { id: 5, type: 'auto-speed' } => Auto Speed Roulette
 ```
 ### Game Template
 ```js
