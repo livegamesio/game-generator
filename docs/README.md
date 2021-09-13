@@ -31,6 +31,7 @@
 - [Parent Webpage Origin](#parent-webpage-origin)
 - [Game Options](#game-options)
 - [Game Template](#game-template)
+- [Open Specific Game Room](#open-specific-game-room)
 - [Additional Parameters](#additional-parameters)
 - [Generate Custom Url](#generate-custom-url)
 
@@ -123,6 +124,12 @@
     env: '' //example: test
   }
 ```
+### Open Specific Game Room
+```js
+  {
+    gameId: '' //example: 1000 > Tombala Live
+  }
+```
 ### Additional Parameters
 ```js
   {
@@ -131,8 +138,7 @@
         homepage: '', //homepage redirect url for unexpected troubles
         cashierUrl: '', //cash add page redirect url for insufficient balance,
         room: '', //custom room id for campaigns or special situations,
-        lobbyUrl: '', //returning to lobby/main page,
-        gameId: '' //open spesific game type
+        lobbyUrl: '', //returning to lobby/main page
     }
   }
 ```
