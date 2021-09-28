@@ -130,7 +130,25 @@
     gameId: '' //example: 1000 > Tombala Live
   }
   
-  Game Room Id List > https://github.com/livegamesio/cge/wiki/Game-List
+  Game Room Id List
+  | ID | Name |
+  |--|--|
+  | **1000** | Tombala Live
+  | **1001** | Tombala VIP
+  | **1002** | Tombala Auto
+  | **1998** | Tombala (Only Test)
+  | **1997** | Tombala Auto (Only Test)
+  | **2000** | Tombala Slot
+  | **3000** | OverUnder
+  | **3001** | OverUnder Ext
+  | **3999** | OverUnder (Only Test)
+  | **4000** | Kılıç
+  | **4999** | Kılıç (Only Test)
+  | **5000** | Roulette Live
+  | **5001** | Roulette Auto
+  | **5002** | Roulette VIP
+  | **5003** | Roulette Speed
+  | **5999** | Roulette (Only Test)
   
 ```
 ### Additional Parameters
