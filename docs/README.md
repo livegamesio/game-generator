@@ -129,6 +129,9 @@
   {
     gameId: '' //example: 1000 > Tombala Live
   }
+  
+  Game Room Id List > https://github.com/livegamesio/cge/wiki/Game-List
+  
 ```
 ### Additional Parameters
 ```js
